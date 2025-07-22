@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration page</title>
+    <link rel="stylesheet" href="../static/dist/css/bootstrap.css">
+    <script src="../static/dist/js/bootstrap.js"></script>
+</head>
+<body>
+    <h1 class="text-danger text-center">Welcome to the registration page</h1>
+    <!-- We  reqyire fullname, email, poassword, phoneno. , role(not in html page(only for admin)) -->
+   <div class="row">
+     <div class="col-md-4"></div>
+    <div class="col-md-4 card shadow p-2"> 
+        <form action="/register" method="POST">
+
+        <h4 class="text-success text-center">{{message}}</h4>
+
+
+        <label>Fullname : </label> 
+        <br>
+
+        <input type="text" name="fullname" placeholder="Enter your fullname here" required>
+        <br> <br>
+
+        <label >Email Address :</label><br>
+        <input type="email" name="email" placeholder="Enter the email address here" required>
+        <br> <br>
+
+        <label for="">Phone number :</label><br>
+        <input type="text" name="phone" placeholder="Enter your phone number" required> 
+        <br> <br>
+
+        <label for="">Password : </label> <br>
+        <input type="password" name="password" placeholder="Enter your passowrd" required>
+        <br>
+        <BR></BR>
+
+        <input type="submit" value="Register" class="btn btn-outline-success ">
+     </form></div>
+    <div class="col-md-4"></div>
+   </div>
+</body>
+</html>

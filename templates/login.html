@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../static/dist/css/bootstrap.css">
+    <script src="../static/dist/js/bootstrap.js"></script>
+</head>
+<body>
+    <h1 class="text-center tev=xt-info">Welcome to Login page</h1>
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 card shadow form-control p-4">
+            <form action="/login">
+                <h4 class="text-center text-success">{{message}}</h4>
+                <label >Email address: </label><br>
+                <input type="email" required placeholder="Enter email " class="form-control" name="email"><br>
+
+                <label for="">passowrd: </label><br>
+                <input type="password" required placeholder="Enter passowrd" class="form-control" name="password"><br>
+
+                <input type="submit" value="log in "  >
+            </form>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</body>
+</html>
