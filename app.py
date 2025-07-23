@@ -1,50 +1,50 @@
 from flask import *
+
 import pymysql
 
-
-# import hashinf functions
+# import the functions for hashing passwords and verifying the same
 import functions
 
-# Create a new appl based on flask
 
+# create a new application based on flask
 app = Flask(__name__)
 
-# Below is the register route
-@app.route("/register", methods=["POST","GET"])
+# below is the register route
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
         return render_template("register.html")
-    
     else:
         fullname = request.form["fullname"]
-        email = request.form["email"]
+        email = request.form['email']
         phone = request.form["phone"]
-        password = request.form["password"]
+        password = request.form['password']
         role = "student"
 
-        # establish connection
-        connection = pymysql.connect(host="localhost", password="",user="root", database="school_db" )
+        # establish a connection to the db
+        connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
 
-        # create a cursor
+        # create a cursor that enables you to execute sql
         cursor = connection.cursor()
 
-        # structure SQL for insert
-        sql = "INSERT INTO users(fullname, email, phone, password , role)  values(%s, %s, %s, %s, %s)"
+        # structure the sql query for insert
+        sql = "INSERT INTO users(fullname, email, phone, password, role) values(%s, %s, %s, %s, %s)"
 
-        # Place data in tuple
-        data = (fullname,email, phone, functions.hash_password_salt(password), role)
 
-        # execute query using cursor
-        cursor.execute(sql,data)
+        # put the data into a tuple
+        data = (fullname, email, phone, functions.hash_password_salt(password), role)
 
-        # commit changes
+        # by use of the cursor, execute the query
+        cursor.execute(sql, data)
+
+        # commit the changes into the db
         connection.commit()
 
-        message="User registerd succesfully"
+        message = "User registered successfully"
 
-    #    return message
-        return render_template("register.html", message=message)
-    
+        # if succesfull render a message back to the person who has registered
+        return render_template("register.html", message = message)
+
 
 app.secret_key = "fhbcqhasbjfcncwasbhjZVcvwsdvcz"
 
@@ -90,54 +90,53 @@ def login():
                     return redirect(url_for("teacher_dashboard"))
                 else:
                     return redirect(url_for("student_dashboard"))
-            else:
+            else: 
                 return render_template("login.html", message = "Incorrect Password")
         else:
             return render_template("login.html", message = "Email not found")
 
-
-
-
-# student dashboard
+        
+    
+# route for the student dashboard
 @app.route("/student/dashboard")
 def student_dashboard():
-     if session.get("user_role") == "student":
-          return render_template("student_dashboard.html" ,name = session.get("user_name"))
-     return redirect(url_for("login"))
+    if session.get("user_role") == "student":
+        return render_template("student_dashboard.html", name= session.get("user_name"))
+    return redirect(url_for("login"))
 
 
-# teacher route
+
+# route for a teacher dashboard
 @app.route("/teacher/dashboard")
 def teacher_dashboard():
     if session.get("user_role") == "teacher":
-        return render_template("teacher_dashboard.html" ,name = session.get("user_name"))
+        return render_template("teacher_dashboard.html", name= session.get("user_name"))
     return redirect(url_for("login"))
+    
 
 
-
-
-# admin rote dashboard
+# route to the admin dashboard
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if session.get("user_role") == "admin":
-         # establish a connection to the db
+        # establish a connection to the db
         connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
 
         cursor = connection.cursor()
+        cursor.execute("select user_id, fullname, email, phone, role from users")
 
-        cursor.execute("select  user_id, fullname , email, phone ,role from users")
+        users = cursor.fetchall()
 
-        users= cursor.fetchall()
-
-        return render_template("admin_dashboard.html" , name = session.get("user_name") ,users=users)
+        return render_template("admin_dashboard.html", name= session.get("user_name"), users= users)
     return redirect(url_for("login"))
 
-# log out
+
+# logout Route
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# run the app
+# run the application on a server
 app.run(debug=True)
