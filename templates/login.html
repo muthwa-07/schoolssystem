@@ -12,8 +12,8 @@
 
     <div class="row">
         <div class="col-md-4"></div>
-        <div class="col-md-4 card shadow form-control p-4">
-            <form action="/login">
+        <div class="col-md-4 card shadow  p-4">
+            <form action="/login" method="POST">
                 <h4 class="text-center text-success">{{message}}</h4>
                 <label >Email address: </label><br>
                 <input type="email" required placeholder="Enter email " class="form-control" name="email"><br>
@@ -22,9 +22,15 @@
                 <input type="password" required placeholder="Enter passowrd" class="form-control" name="password"><br>
 
                 <input type="submit" value="log in "  >
+
+                <br>
+
+                <p>Don't have an account? <a href="/register">Register</a> </p>
             </form>
         </div>
         <div class="col-md-4"></div>
+        
     </div>
+    <a href="/logout" class="btn btn-danger">Logout</a>
 </body>
 </html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../static/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <h2 class="text-center text-info bg-dark p-3">Welcome to the admin dashboard
+        
+    </h2>
+    <p  class="text-danger text-end"> {{name}}</p>> Hello {{name}}</p>
+
+    <!-- <h2>{{users}}</h2> -->
+
+    <table class="table table-boarded table-stripped mt-4">
+        <thead>
+            <th>Fullname</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Actions</th>
+
+        </thead>
+       <tbody>
+
+       </tbody>
+       {%for users in users}
+       <tr>
+        <td>
+            {{ user[1] }}
+        </td>
+        <td>{{user[2]}}</td>
+
+        <td>{{user[3]}}</td>
+
+        <td>{{user[4]}}</td>
+
+        <td><a href="#" class="btn btn-sm btn-warning"></a></td>
+
+       </tr>
+    </table>
+
+    <br><br>
+    <hr>
+    <a href="/logout" class="btn btn-danger">Logout</a>
+</body>
+</html>
