@@ -1,16 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TD</title>
-    <link rel="stylesheet" href="../static/dist/css/bootstrap.min.css">
-</head>
-<body>
-    <h2>Welcome to the teacher dashboard 
-        
-    </h2>
-    <p>{{name}}</p>
-    <a href="/logout" class="btn btn-danger">Logout</a>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="../static/dist/css/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="text-center text-danger bg-info p-3">Welcome to the Teacher's Dashboard</h2>
+      <h3 class="text-end text-primary">Hello, {{ name }}</h3>
+      {{assignments}}
+
+      <a href="{{ url_for('create_assignment') }}" class="btn btn-outline-warning">Post New Assignment</a>
+
+
+
+
+      <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+  </body>
 </html>

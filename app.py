@@ -9,6 +9,31 @@ import functions
 # create a new application based on flask
 app = Flask(__name__)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # below is the register route
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -48,6 +73,18 @@ def register():
 
 app.secret_key = "fhbcqhasbjfcncwasbhjZVcvwsdvcz"
 
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "GET":
@@ -82,6 +119,9 @@ def login():
             if functions.verify_password_salt(db_password, password):
                 session["user_name"] = fullname
                 session["user_role"] = role
+                session["user_id"]=user[0]
+                session["user_email"]=email
+
 
                 # based on the role redirect a person to a given dashboard
                 if role == "admin":
@@ -96,6 +136,19 @@ def login():
             return render_template("login.html", message = "Email not found")
 
         
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 # route for the student dashboard
 @app.route("/student/dashboard")
@@ -106,13 +159,56 @@ def student_dashboard():
 
 
 
-# route for a teacher dashboard
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Teacher dashboard
 @app.route("/teacher/dashboard")
 def teacher_dashboard():
-    if session.get("user_role") == "teacher":
-        return render_template("teacher_dashboard.html", name= session.get("user_name"))
-    return redirect(url_for("login"))
+    if session.get("user_role") != "teacher":
+        return redirect(url_for('login'))
+    # establish a connection to the db
+    connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+
+    cursor = connection.cursor()
+
+    # get the current teacher id
+    cursor.execute("select user_id from users where email=%s", (session.get("user_email"),))
+    teacher = cursor.fetchone()
+
+    if not teacher:
+        return "Teacher not Found"
+   
+    teacher_id = teacher[0]
+
+    cursor.execute("select title, description, due_date, posted_at from assignments where teacher_id = %s order by posted_at DESC", (teacher_id,))
+
+    assignments = cursor.fetchall()
+
+    return render_template("teacher_dashboard.html", name=session.get("user_name"), asssignments = assignments)
+
+ 
     
+
+
+
+
+
+
+
+
+
+
 
 
 # route to the admin dashboard
@@ -131,9 +227,193 @@ def admin_dashboard():
     return redirect(url_for("login"))
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+# Edit user route
+
+@app.route("/admin/user/<int:user_id>/edit", methods=["GET"])
+def edit_user(user_id):
+    if session.get("user_role") == "admin":
+        # establish a connection to the db
+        connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+
+        cursor = connection.cursor()
+        cursor.execute("select user_id, fullname, email, phone, role from users where user_id = %s", (user_id, ))
+        user = cursor.fetchone()
+        return render_template("edit_user.html", user = user)
+    
+    return redirect(url_for("login"))
+
+
+# update route to update th user details
+@app.route("/admin/user/<int:user_id>/update" , methods=["POST"])
+def update_user(user_id):
+    if session.get("user_role") == "admin":
+        fullname = request.form["fullname"]
+        email = request.form["email"]
+        phone= request.form["phone"]
+        role = request.form["role"]
+
+        # establish a connection to the db
+        connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+
+        cursor = connection.cursor()
+
+        sql ="update users set fullname=%s , email=%s , phone=%s, role=%s where user_id=%s "
+        data = (fullname, email , phone, role , user_id)
+
+        cursor.execute(sql,data)
+
+        connection.commit()
+
+        return redirect(url_for('admin_dashboard'))
+    return redirect(url_for("login"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ass route
+@app.route("/teacher/assignments/create", methods=["GET", "POST"])
+def create_assignment():
+    if session.get("user_role") != "teacher":
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        title = request.form["title"]
+        description = request.form["description"]
+        due_date = request.form["due_date"]
+
+        # Get teacher ID from session (assuming you store user_id after login)
+        teacher_email = session.get("user_email")
+
+        # Connect to DB to fetch teacher ID
+        connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+        cursor = connection.cursor()
+        cursor.execute("SELECT user_id FROM users WHERE email=%s", (teacher_email,))
+        teacher = cursor.fetchone()
+
+        if teacher:
+            teacher_id = teacher[0]
+
+            sql = "INSERT INTO assignments (title, description, due_date, teacher_id) VALUES (%s, %s, %s, %s)"
+
+            data = (title, description, due_date, teacher_id)
+
+            cursor.execute(sql, data)
+            connection.commit()
+            return redirect(url_for("teacher_dashboard"))
+        else:
+            return "Teacher not found"
+
+    return render_template("create_assignment.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Delete route
+@app.route("/admin/user/<int:user_id>/delete", methods=["POST"])
+def delete_user(user_id):
+    if session.get("user_role") != "admin":
+        return redirect(url_for("login"))
+
+    connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+    cursor = connection.cursor()
+
+    sql = "DELETE FROM users WHERE user_id = %s"
+    data = (user_id,)
+
+    cursor.execute(sql, data)
+    connection.commit()
+
+    # After deleting, redirect back to the admin dashboard or show a message
+    return redirect(url_for("admin_dashboard"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Student route to view assignment
+@app.route("/student/assignments" ,methods=["POST","GET"])
+def student_assignments():
+    if session.get("user_role") != "student":
+        return redirect(url_for("login"))
+
+    connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
+    cursor = connection.cursor()
+
+    # Assuming you want to show all assignments:
+    sql = "SELECT title, description, due_date, posted_at FROM assignments ORDER BY posted_at DESC"
+    cursor.execute(sql)
+    assignments = cursor.fetchall()
+
+    return render_template("student_assignments.html", assignments=assignments)
+
+
+        
+
+
+        
+    
+    
+
+
+
+
+
 # logout Route
 @app.route("/logout")
 def logout():
+
     session.clear()
     return redirect(url_for("login"))
 

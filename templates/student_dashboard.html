@@ -11,6 +11,10 @@
         
     </h2>
     <p class="text-danger text-end"> {{name}}</p>
+
+    <form action="{{ url_for('student_assignments') }}" method="get" style="display:inline;">
+        <button type="submit" class="btn btn-primary">View Assignments</button>
+    </form>
     <a href="/logout" class="btn btn-danger">Logout</a>
 </body>
 </html>
