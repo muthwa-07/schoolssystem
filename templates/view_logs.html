@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Logs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<section class="container mt-4">
+    <div class="text-center mb-4">
+        <h3 class="jumbotron">My Great Portal</h3>
+        <h5>
+            Logged in as admin
+            <a href="/logout" class="btn btn-danger">Sign out</a>
+        </h5>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h4 class="mb-4 text-center">View Logs</h4>
+
+            {% if logs %}
+                {% for log in logs %}
+                    <div class="card mb-4 shadow">
+                        <div class="card-header font-weight-bold">
+                            {{ log.level }} <!-- Log Level -->
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ log.message }}</p> <!-- Log Message -->
+                            <small class="text-muted">
+                                Endpoint: {{ log.endpoint if log.endpoint else "N/A" }} <br>
+                                Email: {{ log.email if log.email else "N/A" }} <br>
+                                Created at: {{ log.created_at }}
+                            </small>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No logs found.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<script>
+  let timer;
+  function resetTimer() {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      window.location.href = '/logout';  // Changed '/signout' to '/logout' for consistency
+    }, 30000);
+  }
+  ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+    document.addEventListener(evt, resetTimer, false);
+  });
+  resetTimer();
+</script>
+
+</body>
+</html>

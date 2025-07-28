@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="../static/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <h2 >Welcome to student dashboard
+    <h2 class="text-bold text text-center text-success">Welcome to student dashboard
         
     </h2>
-    <p class="text-danger text-end"> {{name}}</p>
+    <p class="text-danger text-center"> Wasap,  {{name}}</p>
 
-    <form action="{{ url_for('student_assignments') }}" method="get" style="display:inline;">
-        <button type="submit" class="btn btn-primary">View Assignments</button>
+    <form  action="{{ url_for('student_assignments') }}" method="get" style="display:inline;">
+        <button type="submit" class="btn btn-primary text-center">View Assignments</button>
     </form>
     <a href="/logout" class="btn btn-danger">Logout</a>
 </body>

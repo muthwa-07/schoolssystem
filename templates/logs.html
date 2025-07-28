@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Logs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      padding: 40px;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #2a5bd7;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto 30px auto;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    .search-container .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .log-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .log-card h4 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      color: #2a5bd7;
+    }
+
+    .log-detail {
+      margin: 4px 0;
+      font-size: 15px;
+      color: #555;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .no-logs {
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <h2>Application Logs</h2>
+
+  <nav>
+    <a href="/logout">Sign Out</a> /
+    
+  </nav>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% elif logs %}
+    <div class="search-container">
+      <input type="text" id="logFilter" placeholder="Search logs..." onkeyup="filterLogs()" />
+      <span class="search-icon">&#128269;</span>
+    </div>
+
+    <div id="logContainer">
+      {% for log in logs %}
+      <div class="log-card">
+        <h4>{{ log.level }} - {{ log.id }}</h4>
+        <div class="log-detail"><strong>Message:</strong> {{ log.message }}</div>
+        <div class="log-detail"><strong>Endpoint:</strong> {{ log.endpoint }}</div>
+        <div class="log-detail"><strong>User Email:</strong> {{ log.email }}</div>
+        <div class="log-detail"><strong>Timestamp:</strong> {{ log.created_at }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-logs">No logs found.</p>
+  {% endif %}
+
+  <script>
+    function filterLogs() {
+      const input = document.getElementById('logFilter');
+      const filter = input.value.toLowerCase();
+      const cards = document.querySelectorAll('.log-card');
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(filter) ? 'block' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -8,19 +8,36 @@
 </head>
 <body>
     <h1 class="text-info text-center">Asssignments</h1>
-     <h2 class="text-center text-info mt-4 p-3">{{assignments}}</h2>
-     <table>
+
+    <p class="text-center text-danger">Wasap </p>
+     <h2 class="text-center text-info mt-4 p-3"></h2>
+     <h4> Assignments</h4>
+      <table class="table table-bordered table-striped">
         <thead>
-            <th>Assignment</th>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Posted At</th>
+          </tr>
         </thead>
         <tbody>
-            <!-- {% for assignments in id %} -->
-            <tr>
-                <td>{{assignments}}</td>
-            </tr>
-            <!-- {% endfor %} -->
+          {% for assignment in assignments %}
+          <tr>
+            <td>{{ assignment[0] }}</td>
+            <td>{{ assignment[1] }}</td>
+            <td>{{ assignment[2] }}</td>
+            <td>{{ assignment[3] }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4">No assignments posted yet.</td>
+          </tr>
+          {% endfor %}
         </tbody>
-     </table>
+      </table>
+
+      <a href="/logout" class="btn btn-danger">Logout</a>
 </form>
 </body>
 </html>
