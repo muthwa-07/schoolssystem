@@ -1,7 +1,9 @@
+
 from flask import *
 import logging
 import pymysql
 from datetime import datetime, timedelta
+import re
 
 # import the functions for hashing passwords and verifying the same
 import functions
@@ -62,6 +64,44 @@ def log_to_db(level, message, endpoint=None, email=None):
     except Exception as e:
         app.logger.error(f"MySQL logging failed: {e}")
 
+# Password checker
+def check_password_strength(password):
+    # Minimum length check
+    if len(password) < 8:
+        return "Must be eight characters"
+
+    elif not re.search("[a-z]", password):
+        return "Must have at least one small letter"
+
+    elif not re.search("[A-Z]", password):
+        return "Must have at least one capital letter"
+
+    elif not re.search("[0-9]", password):
+        return "Must have at least one number"
+
+    elif not re.search("[_@#$]", password):
+        return "Must have at least one symbol"
+
+    else:
+        common_patterns = [
+            r'(?i)password',
+            r'(?i)123456',
+            r'(?i)qwerty',
+            r'(?i)admin',
+            r'(?i)root',
+            # Add more common patterns as needed
+        ]
+        
+        for pattern in common_patterns:
+            if re.search(pattern, password):
+                return "Password too Simple"
+        
+        # If all criteria are met, return "Password correct"
+        return "Password Correct - Strong Password"
+
+
+
+
 # --- Automatically log every incoming request ---
 @app.before_request
 def log_request_info():
@@ -75,6 +115,36 @@ def log_request_info():
     except Exception as e:
         app.logger.error(f"Failed to log request: {e}")
 
+        app.logger.error(f"Failed to log request: {e}")
+
+# --- Inactivity Logout --- 
+INACTIVITY_TIMEOUT = 30 
+
+@app.before_request
+def check_inactivity():
+    if 'userrole' in session:
+        last_active = session.get('last_active')
+        now = datetime.now()
+        if last_active:
+            try:
+                last_active = datetime.strptime(last_active, "%Y-%m-%d %H:%M:%S.%f")
+                if now - last_active > INACTIVITY_TIMEOUT:
+                    email = session.get('useremail')
+                    session.clear()
+                    flash("You have been logged out due to inactivity.", "warning")
+                    app.logger.info(f"{email} was logged out due to inactivity.")
+                    log_to_db('INFO', 'User logged out due to inactivity.', endpoint='before_request', user_email=email)
+                    return redirect('/login')
+            except Exception as e:
+                app.logger.error(f"Error parsing last_active timestamp: {e}")
+                session.clear()
+                return redirect('/login')
+        session['last_active'] = str(now)
+
+
+
+
+
 # --- Routes ---
 
 @app.route("/register", methods=["GET", "POST"])
@@ -87,6 +157,12 @@ def register():
         phone = request.form["phone"]
         password = request.form['password']
         role = "student"
+
+        # Check password strength first
+        password_check = check_password_strength(password)
+        if password_check != "Password Correct - Strong Password":
+            # Show error message and don't register
+            return render_template("register.html", message=password_check)
 
         connection = pymysql.connect(host="localhost", user="root", password="", database="school_db")
         cursor = connection.cursor()

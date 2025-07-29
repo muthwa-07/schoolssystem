@@ -40,5 +40,21 @@
       </form>
     </div>
 
+
+
+
+    <script>
+  let timer;
+  function resetTimer() {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      window.location.href = '/login';
+    }, 30000);
+  }
+  ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+    document.addEventListener(evt, resetTimer, false);
+  });
+  resetTimer();
+  </script>
 </body>
 </html>
